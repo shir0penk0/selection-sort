@@ -2,12 +2,32 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
+	"strings"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
-	s := getArgs()
+	s := []int{}
+	if terminal.IsTerminal(0) {
+		s = getArgs()
+	} else {
+		stdin, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			log.Fatal("Invalid numer")
+		}
+		for _, v := range strings.Fields(string(stdin)) {
+			i, err := strconv.Atoi(v)
+			if err != nil {
+				log.Fatal("Invalid number")
+			}
+			s = append(s, i)
+		}
+	}
 	fmt.Println("Befor: ", s)
 	fmt.Println("After: ", sort(s))
 }
